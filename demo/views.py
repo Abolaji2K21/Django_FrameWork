@@ -6,8 +6,8 @@ from django.shortcuts import render
 # localhost: 8000/demo
 
 def say_hello(request):
-    return HttpResponse("Hello World!")
+    return HttpResponse("Hello, world!!!!")
 
 
 def welcome(request, name):
-    return HttpResponse(f"Welcome {name} to my YouTube channel demo!")
+    return render(request, 'index.html', context={'name': ""})
