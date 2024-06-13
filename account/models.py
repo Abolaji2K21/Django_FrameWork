@@ -1,9 +1,6 @@
 from django.db import models
-
 from account.utility import generate_account_number
 
-
-# Create your models here.
 
 class Account(models.Model):
     firstName = models.CharField(max_length=255)
@@ -17,40 +14,39 @@ class Account(models.Model):
                                   decimal_places=2,
                                   default=0.00)
     ACCOUNT_TYPE = [
-        ('SAVINGS', 'S'),
-        ('CURRENT', 'C'),
-        ('DOMICILIARY', 'DOM'),
-
+        ('S', 'SAVINGS'),
+        ('C', 'CURRENT'),
+        ('DOM', 'DOMICILIARY'),
     ]
-    account_type = models.CharField(max_length=1,
+    account_type = models.CharField(max_length=11,  # Updated max_length
                                     choices=ACCOUNT_TYPE,
-                                    default='SAVINGS')
+                                    default='S')
+
+    def __str__(self):
+        return f'{self.firstName} {self.lastName} {self.account_type} {self.balance} {self.accountNumber}'
 
 
 class Transaction(models.Model):
     TRANSACTION_TYPE = [
-        ('CREDIT',   'CRE'),
-        ('DEBIT',    'TRA'),
-        ('TRANSFER', 'TRAN'),
-
+        ('CRE', 'CREDIT'),
+        ('TRA', 'DEBIT'),
+        ('TRAN', 'TRANSFER'),
     ]
     TRANSACTION_STATUS = [
-        ('SUCCESSFUL', 'S'),
-        ('FAILED',     'F'),
-        ('PENDING',    'P')
-
+        ('S', 'SUCCESSFUL'),
+        ('F', 'FAILED'),
+        ('P', 'PENDING'),
     ]
 
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
-    transaction_type = models.CharField(max_length=3,
+    transaction_type = models.CharField(max_length=7,  # Updated max_length
                                         choices=TRANSACTION_TYPE,
                                         default='CRE')
 
     transaction_date = models.DateTimeField(auto_now_add=True)
-    amount = models.DecimalField(max_digits=10
-
-                                 , decimal_places=2)
+    amount = models.DecimalField(max_digits=10,
+                                 decimal_places=2)
     description = models.TextField()
     transaction_status = models.CharField(max_length=1,
                                           choices=TRANSACTION_STATUS,
-                                          default='SUCCESSFUL')
+                                          default='S')
