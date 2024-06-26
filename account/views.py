@@ -28,10 +28,21 @@ def list_account(request):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-
-
-@api_view()
+@api_view(["GET", "PATCH", "PUT", "DELETE"])
 def account_details(request, pk):
     account = get_object_or_404(Account, pk=pk)
-    serializer = AccountSerialize(account)
-    return Response(serializer.data, status=status.HTTP_200_OK)
+    if request.method == 'GET':
+        serializer = AccountSerialize(account)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    elif request.method == 'PUT':
+        serializer = AccountCreateSerialize(account, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    elif request.method == 'DELETE':
+        account.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+
+
