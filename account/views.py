@@ -53,7 +53,7 @@ def deposit(request):
     account = get_object_or_404(Account, pk=account_number)
     account.balance += Decimal(amount)
     account.save()
-    Transaction.objects.create(account=account.accountNumber,
+    Transaction.objects.create(account=account,
                                amount=amount
                                )
     return Response(data={"message : Transaction Successful"},
@@ -62,15 +62,33 @@ def deposit(request):
 
 @api_view(["PATCH"])
 def withdraw(request):
-    account_number = request.data['account_number']
-    amount = Decimal(request.data['amount'])
-    pin = request.data['pin']
+    account_number = request.data.get('account_number')
+    amount = request.data.get('amount')
+    pin = request.data.get('pin')
+    transaction_type = request.data.get('transaction_type')
+
+    if not all([account_number, amount, pin, transaction_type]):
+        return Response(data={"message": "Missing required fields"}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        amount = Decimal(amount)
+    except ValueError:
+        return Response(data={"message": "Invalid amount"}, status=status.HTTP_400_BAD_REQUEST)
+
     account = get_object_or_404(Account, pk=account_number)
+
     if account.pin != pin:
         return Response(data={"message": "Incorrect pin"}, status=status.HTTP_400_BAD_REQUEST)
+
     if account.balance < amount:
         return Response(data={"message": "Balance is lower than withdraw amount"}, status=status.HTTP_400_BAD_REQUEST)
     account.balance -= amount
     account.save()
+
+    Transaction.objects.create(
+        account=account,
+        amount=amount,
+        transaction_type=transaction_type
+    )
 
     return Response(data={"message": "Withdrawal Successful"}, status=status.HTTP_200_OK)
