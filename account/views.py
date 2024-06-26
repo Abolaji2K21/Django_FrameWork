@@ -54,3 +54,18 @@ def deposit(request):
     account.balance += Decimal(amount)
     account.save()
     return Response(data={"message : Transaction Successful"}, status=status.HTTP_201_CREATED)
+
+
+@api_view(["PATCH"])
+def withdraw(request):
+    account_number = request.data['account_number']
+    amount = Decimal(request.data['amount'])
+    pin = request.data['pin']
+    account = get_object_or_404(Account, pk=account_number)
+    if account.pin != pin:
+        return Response(data={"message": "Incorrect pin"}, status=status.HTTP_400_BAD_REQUEST)
+    if account.balance < amount:
+        return Response(data={"message": "Balance is lower than withdraw amount"}, status=status.HTTP_400_BAD_REQUEST)
+    account.balance -= amount
+    account.save()
+    return Response(data={"message": "Withdrawal Successful"}, status=status.HTTP_200_OK)
