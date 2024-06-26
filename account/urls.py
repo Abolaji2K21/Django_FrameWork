@@ -4,6 +4,7 @@ from account import views
 
 urlpatterns = [
     path('accounts/', views.list_account),
-    path('accounts/<str:pk>/', views.account_details)
+    path('accounts/<str:pk>/', views.account_details),
+    path('deposit', views.deposit)
 
 ]
