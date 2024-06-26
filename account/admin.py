@@ -12,4 +12,5 @@ class AccountAdmin(admin.ModelAdmin):
     search_fields = ['accountNumber', 'firstName', 'lastName']
     # list_editable = ['lastName', 'accountNumber', 'balance', 'account_type']
 
+
 # admin.site.register(Account)
