@@ -7,7 +7,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.templatetags.rest_framework import data
 
-from .models import Account
+from .models import Account, Transaction
 from .serializers import AccountSerialize, AccountCreateSerialize
 
 
@@ -49,11 +49,15 @@ def account_details(request, pk):
 @api_view(["POST"])
 def deposit(request):
     account_number = request.data['account_number']
-    amount = request.data['amount']
+    amount = Decimal(request.data['amount'])
     account = get_object_or_404(Account, pk=account_number)
     account.balance += Decimal(amount)
     account.save()
-    return Response(data={"message : Transaction Successful"}, status=status.HTTP_201_CREATED)
+    Transaction.objects.create(account=account.accountNumber,
+                               amount=amount
+                               )
+    return Response(data={"message : Transaction Successful"},
+                    status=status.HTTP_201_CREATED)
 
 
 @api_view(["PATCH"])
@@ -68,4 +72,5 @@ def withdraw(request):
         return Response(data={"message": "Balance is lower than withdraw amount"}, status=status.HTTP_400_BAD_REQUEST)
     account.balance -= amount
     account.save()
+
     return Response(data={"message": "Withdrawal Successful"}, status=status.HTTP_200_OK)
