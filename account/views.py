@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404
 from rest_framework import status
 from rest_framework.decorators import api_view
+from rest_framework.generics import ListCreateAPIView
 from rest_framework.response import Response
 from rest_framework.templatetags.rest_framework import data
 from rest_framework.views import APIView
@@ -15,17 +16,23 @@ from .serializers import AccountSerialize, AccountCreateSerialize
 # Create your views here.
 
 
-class ListAccount(APIView):
-    def get(self, request):
-        accounts = Account.objects.all()
-        serializer = AccountSerialize(accounts, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+class ListAccount(ListCreateAPIView):
+    def get_queryset(self):
+        return Account.objects.all()
 
-    def post(self, request):
-        serializer = AccountCreateSerialize(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    def get_serializer_class(self):
+        return AccountCreateSerialize
+
+    # def get(self, request):
+    #     accounts = Account.objects.all()
+    #     serializer = AccountCreateSerialize(accounts, many=True)
+    #     return Response(serializer.data, status=status.HTTP_200_OK)
+    #
+    # def post(self, request):
+    #     serializer = AccountCreateSerialize(data=request.data)
+    #     serializer.is_valid(raise_exception=True)
+    #     serializer.save()
+    #     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 # @api_view(['GET', 'POST'])
@@ -45,7 +52,6 @@ class ListAccount(APIView):
 
 
 class AccountDetail(APIView):
-
     def get(self, request, pk):
         account = get_object_or_404(Account, pk=pk)
         serializer = AccountSerialize(account)
