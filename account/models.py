@@ -1,3 +1,4 @@
+
 from django.db import models
 from account.utility import generate_account_number
 from account.validators import validate_pin
@@ -39,8 +40,8 @@ class Transaction(models.Model):
         ('P', 'PENDING'),
     ]
 
-    account = models.ForeignKey(Account, on_delete=models.CASCADE)
-    transaction_type = models.CharField(max_length=7,  # Updated max_length
+    account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='transactions')
+    transaction_type = models.CharField(max_length=7,
                                         choices=TRANSACTION_TYPE,
                                         default='CRE')
 
