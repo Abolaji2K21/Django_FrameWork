@@ -20,6 +20,7 @@ class Account(models.Model):
         ('C', 'CURRENT'),
         ('DOM', 'DOMICILIARY'),
     ]
+    transactions = models.ManyToOneRel
     account_type = models.CharField(max_length=11,  # Updated max_length
                                     choices=ACCOUNT_TYPE,
                                     default='S')
