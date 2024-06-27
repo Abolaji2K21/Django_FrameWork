@@ -1,10 +1,12 @@
-
+from django.contrib.auth.models import User
 from django.db import models
+from django.conf import settings
 from account.utility import generate_account_number
 from account.validators import validate_pin
 
 
 class Account(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     firstName = models.CharField(max_length=255)
     lastName = models.CharField(max_length=255)
     pin = models.CharField(max_length=4, validators=[validate_pin])
