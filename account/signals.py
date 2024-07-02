@@ -5,10 +5,10 @@ from account.models import Account
 from user.models import User
 
 
-@receiver(signal=post_save)
-def create_account(self, instance, created, sender=User):
+@receiver(post_save, sender=User)
+def create_account(instance, created, **kwargs):
     if created:
         Account.objects.create(
-            user=instance.user,
+            user=instance,
             accountNumber=instance.phone[1:]
         )

@@ -16,7 +16,7 @@ urlpatterns = [
     path('', include(router.urls)),
     path('deposit', views.deposit),
     path('withdraw', views.withdraw),
-    path('create', views.CreateAccount.as_view()),
+    # path('create', views.CreateAccount.as_view()),
 
 
 

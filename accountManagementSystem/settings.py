@@ -143,3 +143,5 @@ DJOSER = {
         'user_create': 'user.serializer.UserSerializer'
     }
 }
+
+ADMINS_URL = 'accountAdmin'
