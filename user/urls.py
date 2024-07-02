@@ -7,6 +7,6 @@ urlpatterns = [
     # path("api/v1", include("demo.urls")),
     # path("user", include("account.urls"))
 
-    path('register', views.UserRegistration.as_view(), name='register')
+    path('register', views.UserRegistration.as_view())
 
 ]
