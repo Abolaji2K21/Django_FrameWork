@@ -9,7 +9,7 @@ class Account(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     # firstName = models.CharField(max_length=255)
     # lastName = models.CharField(max_length=255)
-    pin = models.CharField(max_length=4, validators=[validate_pin])
+    pin = models.CharField(max_length=4, validators=[validate_pin], default= '0000')
     accountNumber = models.CharField(max_length=15,
                                      default=generate_account_number,
                                      unique=True,
