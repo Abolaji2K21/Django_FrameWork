@@ -19,14 +19,11 @@ from django.urls import path, include
 
 admin.site.site_header = 'AccountManagementSystem'
 
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("demo/", include("demo.urls")),
+    path("auth/", include('djoser.urls')),
     path("api/v1/", include("account.urls")),
     path("users/", include("user.urls"))
 
 ]
-
-
-
