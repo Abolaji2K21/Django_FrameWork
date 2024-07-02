@@ -104,18 +104,31 @@ class AccountViewSet(viewsets.ModelViewSet):
 #         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-@api_view(["POST"])
-def deposit(request):
-    account_number = request.data['account_number']
-    amount = Decimal(request.data['amount'])
-    account = get_object_or_404(Account, pk=account_number)
-    account.balance += Decimal(amount)
-    account.save()
-    Transaction.objects.create(account=account,
-                               amount=amount
-                               )
-    return Response(data={"message : Transaction Successful"},
-                    status=status.HTTP_201_CREATED)
+# @api_view(["POST"])
+# def deposit(request):
+#     account_number = request.data['account_number']
+#     amount = Decimal(request.data['amount'])
+#     account = get_object_or_404(Account, pk=account_number)
+#     account.balance += Decimal(amount)
+#     account.save()
+#     Transaction.objects.create(account=account,
+#                                amount=amount
+#                                )
+#     return Response(data={"message : Transaction Successful"},
+#                     status=status.HTTP_201_CREATED)
+
+class Deposit(APIView):
+    def post(self, request):
+        account_number = request.data['account_number']
+        amount = Decimal(request.data['amount'])
+        account = get_object_or_404(Account, pk=account_number)
+        account.balance += Decimal(amount)
+        account.save()
+        Transaction.objects.create(account=account,
+                                   amount=amount
+                                   )
+        return Response(data={"message : Transaction Successful"},
+                        status=status.HTTP_201_CREATED)
 
 
 @api_view(["PATCH"])
@@ -150,7 +163,6 @@ def withdraw(request):
     )
 
     return Response(data={"message": "Withdrawal Successful"}, status=status.HTTP_200_OK)
-
 
 #     class CreateAccount(CreateAPIView):
 #     queryset = Account.objects.all()

@@ -7,11 +7,11 @@ from .models import Account
 
 @admin.register(Account)
 class AccountAdmin(admin.ModelAdmin):
-    pass
-    # list_display = ('firstName', 'lastName', 'accountNumber', 'balance')
-    # list_per_page = 10
-    # search_fields = ['accountNumber', 'firstName', 'lastName']
-    # list_editable = ['lastName', 'accountNumber', 'balance', 'account_type']
+    list_display = ('accountNumber', 'balance', 'account_type')
+    list_per_page = 10
+    search_fields = ['account_type'],
+    list_editable = ['account_type', 'balance']
+
 
 
 # admin.site.register(Account)
