@@ -7,8 +7,8 @@ from account.validators import validate_pin
 
 class Account(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
-    firstName = models.CharField(max_length=255)
-    lastName = models.CharField(max_length=255)
+    # firstName = models.CharField(max_length=255)
+    # lastName = models.CharField(max_length=255)
     pin = models.CharField(max_length=4, validators=[validate_pin])
     accountNumber = models.CharField(max_length=15,
                                      default=generate_account_number,
@@ -28,7 +28,7 @@ class Account(models.Model):
                                     default='S')
 
     def __str__(self):
-        return f'{self.firstName} {self.lastName} {self.account_type} {self.balance} {self.accountNumber}'
+        return f'{self.account_type} {self.balance} {self.accountNumber}'
 
 
 class Transaction(models.Model):
