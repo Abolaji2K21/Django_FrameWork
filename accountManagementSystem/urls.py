@@ -28,4 +28,3 @@ urlpatterns = [
 
 
 
-#python manage.py run
