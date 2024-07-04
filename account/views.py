@@ -235,7 +235,6 @@ class TransactionViewSet(viewsets.ModelViewSet):
     serializer_class = TransferSerializer
     permission_classes = [IsAuthenticated]
 
-    @Transaction.atomic
     def create(self, request, *args, **kwargs):
         user = request.user
         print(user)
@@ -258,6 +257,9 @@ class TransactionViewSet(viewsets.ModelViewSet):
         try:
             transferred_balance = receiver_account_to.balance + amount
             Account.objects.filter(pk=receiver_account).update(balance=transferred_balance)
+            new_balance = sender_account_from.balance - amount
+            Account.objects.filter(pk=sender_account).update(balance=new_balance)
+
         except Account.DoesNotExist:
             return Response(data={"message": "Transaction failed"}, status=status.HTTP_400_BAD_REQUEST)
         Transaction.objects.create(
@@ -271,6 +273,9 @@ class TransactionViewSet(viewsets.ModelViewSet):
         return Response(data=transaction_details, status=status.HTTP_200_OK)
 
     def retrieve(self, request, *args, **kwargs):
+        return Response(data="Method not supported", status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def list(self, request, *args, **kwargs):
         return Response(data="Method not supported", status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 

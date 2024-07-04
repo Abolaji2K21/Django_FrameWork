@@ -6,6 +6,7 @@ from rest_framework.routers import SimpleRouter
 
 router = SimpleRouter()
 router.register('accounts', views.AccountViewSet)
+router.register('transfer', views.TransactionViewSet, basename='transfer')
 
 
 # print(router.urls)
@@ -16,6 +17,7 @@ urlpatterns = [
     path('', include(router.urls)),
     path('deposit', views.Deposit.as_view()),
     path('withdraw', views.Withdraw.as_view()),
+    # path('transfer', views.CreateAPIView.as_view())
     # path('create', views.CreateAccount.as_view()),
 
 
