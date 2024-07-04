@@ -1,6 +1,7 @@
 from decimal import Decimal
 
 from django.core.exceptions import PermissionDenied
+from django.core.mail import send_mail
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404
 from rest_framework import status, viewsets
@@ -288,6 +289,16 @@ class CheckBalance(APIView):
         transaction_details = {}
         transaction_details['account_number'] = account.accountNumber
         transaction_details['balance'] = account.balance
+
+        message = f'''
+               your new balance is 
+               {account.balance}
+               '''
+        send_mail(subject='Your account balance',
+                  message=message,
+                  from_email='noreply@localhost.com',
+                  recipient_list=['adewunmi@gmail.com'])
         return Response(data=transaction_details, status=status.HTTP_200_OK)
+
 
 
