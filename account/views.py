@@ -1,5 +1,6 @@
 from decimal import Decimal
 
+from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404
 from rest_framework import status, viewsets
@@ -12,7 +13,8 @@ from rest_framework.templatetags.rest_framework import data
 from rest_framework.views import APIView
 
 from .models import Account, Transaction
-from .serializers import AccountSerialize, AccountCreateSerialize, DepositWithdrawSerializer, WithdrawSerializer
+from .serializers import AccountSerialize, AccountCreateSerialize, DepositWithdrawSerializer, WithdrawSerializer, \
+    QueryBalanceSerializer, TransferSerializer
 
 
 # Create your views here.
@@ -188,6 +190,8 @@ class Withdraw(APIView):
                 return Response(data={"message": "Insufficient balance"}, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response(data={"message": "Incorrect pin"}, status=status.HTTP_400_BAD_REQUEST)
+
+
 # @api_view(["PATCH"])
 # def withdraw(request):
 #     account_number = request.data.get('account_number')
@@ -224,3 +228,66 @@ class Withdraw(APIView):
 #     class CreateAccount(CreateAPIView):
 #     queryset = Account.objects.all()
 #     serializer_class = AccountCreateSerialize
+
+
+class TransactionViewSet(viewsets.ModelViewSet):
+    queryset = Account.objects.all()
+    serializer_class = TransferSerializer
+    permission_classes = [IsAuthenticated]
+
+    @Transaction.atomic
+    def create(self, request, *args, **kwargs):
+        user = request.user
+        print(user)
+        serializer = TransferSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        sender_account = serializer.data['sender_account']
+        receiver_account = serializer.data['receiver_account']
+        amount = serializer.data['amount']
+        pin = serializer.data['pin']
+        description = request.data['description']
+        transaction_details = {}
+        sender_account_from = get_object_or_404(Account, pk=sender_account)
+        receiver_account_to = get_object_or_404(Account, pk=receiver_account)
+        balance = sender_account_from.balance
+        transaction_details = {}
+        if balance > amount:
+            balance -= amount
+        else:
+            return Response(data={"message": "Insufficient balance"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            transferred_balance = receiver_account_to.balance + amount
+            Account.objects.filter(pk=receiver_account).update(balance=transferred_balance)
+        except Account.DoesNotExist:
+            return Response(data={"message": "Transaction failed"}, status=status.HTTP_400_BAD_REQUEST)
+        Transaction.objects.create(
+            account=sender_account_from,
+            amount=amount,
+            transaction_type='TRANSFER'
+        )
+        transaction_details['receiver_account'] = receiver_account
+        transaction_details['amount'] = amount
+        transaction_details['transaction_type'] = 'TRANSFER'
+        return Response(data=transaction_details, status=status.HTTP_200_OK)
+
+    def retrieve(self, request, *args, **kwargs):
+        return Response(data="Method not supported", status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
+class CheckBalance(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        serializer = QueryBalanceSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        account_number = serializer.data['account_number']
+        pin = serializer.data['pin']
+        transaction_details = {}
+        account = get_object_or_404(Account, accountNumber=account_number)
+        if pin != account.pin:
+            raise PermissionDenied
+        else:
+            balance = account.balance
+            transaction_details['account_number'] = account_number
+            transaction_details['balance'] = balance
+            return Response(data=transaction_details, status=status.HTTP_200_OK)
