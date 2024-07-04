@@ -283,16 +283,11 @@ class CheckBalance(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        serializer = QueryBalanceSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        account_number = serializer.data['account_number']
-        pin = serializer.data['pin']
+        user = request.user
+        account = get_object_or_404(Account, user=user.id)
         transaction_details = {}
-        account = get_object_or_404(Account, accountNumber=account_number)
-        if pin != account.pin:
-            raise PermissionDenied
-        else:
-            balance = account.balance
-            transaction_details['account_number'] = account_number
-            transaction_details['balance'] = balance
-            return Response(data=transaction_details, status=status.HTTP_200_OK)
+        transaction_details['account_number'] = account.accountNumber
+        transaction_details['balance'] = account.balance
+        return Response(data=transaction_details, status=status.HTTP_200_OK)
+
+
