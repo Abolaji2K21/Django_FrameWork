@@ -4,6 +4,8 @@ from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404
 from rest_framework import status, viewsets
 from rest_framework.decorators import api_view
+from rest_framework.permissions import IsAuthenticated
+
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, CreateAPIView
 from rest_framework.response import Response
 from rest_framework.templatetags.rest_framework import data
@@ -155,6 +157,7 @@ class Deposit(APIView):
 
 
 class Withdraw(APIView):
+    permission_classes = [IsAuthenticated]
 
     def patch(self, request):
         serializer = WithdrawSerializer(data=request.data)
