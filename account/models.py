@@ -51,7 +51,7 @@ class Transaction(models.Model):
     transaction_date = models.DateTimeField(auto_now_add=True)
     amount = models.CharField(max_length=25
                               )
-    description = models.TextField(blank=True)
+    description = models.TextField(max_length=255, default="Transaction Description not provided")
     transaction_status = models.CharField(max_length=1,
                                           choices=TRANSACTION_STATUS,
                                           default='S')
