@@ -265,7 +265,12 @@ class TransactionViewSet(viewsets.ModelViewSet):
             return Response(data={"message": "Transaction failed"}, status=status.HTTP_400_BAD_REQUEST)
         Transaction.objects.create(
             account=sender_account_from,
-            amount=amount,
+            amount='-' + str(amount),
+            transaction_type='TRANSFER'
+        )
+        Transaction.objects.create(
+            account=receiver_account_to,
+            amount='+' + str(amount),
             transaction_type='TRANSFER'
         )
         transaction_details['receiver_account'] = receiver_account
